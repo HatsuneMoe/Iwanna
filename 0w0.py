@@ -49,7 +49,7 @@ class GetHtml2Json():
 if __name__ == "__main__":
     i = 1
     PageNum = 50
-    Name = "叶梦舞鸢"
+    Name = ""
     while i <= PageNum:
         A = GetHtml2Json(i, Name)
         A.getElement()
