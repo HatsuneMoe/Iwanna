@@ -40,7 +40,7 @@ class GetHtml2Json():
             for s in mList:
                 data={} 
                 data["Title"] = s[0]
-                data["context"] = s[1]
+                data["content"] = s[1]
                 data["Tieba"] = s[2]
                 data["Time"] = s[3]
                 self.dataJson.append(data)
@@ -55,7 +55,7 @@ class GetHtml2Json():
 
 if __name__ == "__main__":
     i = 1
-    Name = ''
+    Name = ""
     while True:
         A = GetHtml2Json(i, Name)
         A.getElement()

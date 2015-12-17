@@ -1,18 +1,28 @@
 # encoding=utf-8
 import json
 import jieba
+import jieba.posseg
+import jieba.analyse
+import traceback  
 
 class Analysis():
     dataSegment = []
+
+    def Filter(self, input_iter):
+        for token in input_iter:
+            if token not in ",.?;'[]()`~!@#$%^&*/+_-=<>{}:，。？！·；：‘“、\"… ":
+                yield token
+        
     def NaiveTextSegmentation(self, dataJson):
-        mFile = open("Analysis_Segmentation.json", 'w+')
+        mFile = open("Analysis_Segmentation_test.json", 'w+')
         
         for element in dataJson:
             data = {}
-            data["context"] = element["context"]
-            
-            data["Segmentation"] = list(jieba.cut_for_search(element["context"]))
-            #print(data["Segmentation"])
+            data["content"] = element["content"]
+            try:
+                data["Segmentation"] = list(self.Filter(jieba.cut(element["content"], cut_all=False)))
+            except:
+                traceback.print_exc()
             self.dataSegment.append(data)
             #print(self.dataSegment)
         jsonStr = json.dumps(self.dataSegment, ensure_ascii = False, indent=2)

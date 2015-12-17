@@ -9,7 +9,7 @@ Be vigilant, your entire life is online
 
 ###What we build next
 * Learning NLP
-* Build a demo with NLPK
+* Build a demo with NLTK
 
 ===========================
 
