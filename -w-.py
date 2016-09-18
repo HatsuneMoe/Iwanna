@@ -35,7 +35,7 @@ class Analysis:
 
 
 if __name__ == "__main__":    
-    with open("絮絮雨.json", "r") as jsonFile:
+    with open("data.json", "r") as jsonFile:
         data = jsonFile.read()
         # print(data)
         dataJson = json.loads(data)
