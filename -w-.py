@@ -1,42 +1,44 @@
+# !/usr/bin/env python
 # encoding=utf-8
 import json
 import jieba
 import jieba.posseg
 import jieba.analyse
-import traceback  
+import traceback
 
-class Analysis():
-    dataSegment = []
 
-    def Filter(self, input_iter):
+class Analysis:
+    _dataSegment = []
+
+    @staticmethod
+    def filter(input_iter):
         for token in input_iter:
             if token not in ",.?;'[]()`~!@#$%^&*/+_-=<>{}:，。？！·；：‘“、\"… ":
                 yield token
+
+    def naive_text_segmentation(self, data_json):
+        _mFile = open("Analysis_Segmentation_test.json", 'w+')
         
-    def NaiveTextSegmentation(self, dataJson):
-        mFile = open("Analysis_Segmentation_test.json", 'w+')
-        
-        for element in dataJson:
-            data = {}
-            data["content"] = element["content"]
+        for element in data_json:
+
+            _mdata = dict()
+            _mdata["content"] = element["content"]
             try:
-                data["Segmentation"] = list(self.Filter(jieba.cut(element["content"], cut_all=False)))
-            except:
+                _mdata["Segmentation"] = list(self.filter(jieba.cut(element["content"], cut_all=False)))
+            except KeyError:
                 traceback.print_exc()
-            self.dataSegment.append(data)
-            #print(self.dataSegment)
-        jsonStr = json.dumps(self.dataSegment, ensure_ascii = False, indent=2)
-        mFile.write(jsonStr)
-        mFile.close()
-    
+            self._dataSegment.append(_mdata)
+            # print(self.dataSegment)
+        json_str = json.dumps(self._dataSegment, ensure_ascii=False, indent=2)
+        _mFile.write(json_str)
+        _mFile.close()
+
 
 if __name__ == "__main__":    
     with open("絮絮雨.json", "r") as jsonFile:
         data = jsonFile.read()
-        #print(data)
+        # print(data)
         dataJson = json.loads(data)
         A = Analysis()
-        A.NaiveTextSegmentation(dataJson)
-
+        A.naive_text_segmentation(dataJson)
     jsonFile.close()
-    
