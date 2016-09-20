@@ -8,13 +8,14 @@ Be vigilant, your entire life is online
 
 
 ###What we build next
-* Learning NLP
-* Build a demo with NLTK
+* to build a new train set for CRF++
+* demo with NLTK
 
 ===========================
 
 
 ###Require
 Text Segmentation:
+CRF++ 0.58
 [jieba branch jieba3k][url_jieba]
 [url_jieba]:https://github.com/fxsjy/jieba/tree/jieba3k "an amazing text segmentation module o(*≧▽≦)ツ "
