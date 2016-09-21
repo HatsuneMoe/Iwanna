@@ -15,6 +15,10 @@ Be vigilant, your entire life is online
 
 
 ###Require
+Web Crawler:
+[Scrapy][url_Scrapy]
+[url_Scrapy]:https://scrapy.org/
+
 Text Segmentation:
 CRF++ 0.58
 [jieba branch jieba3k][url_jieba]
