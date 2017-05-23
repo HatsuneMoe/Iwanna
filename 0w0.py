@@ -1,67 +1,88 @@
 # encoding=utf-8
 import re
-import urllib.request
 import os
-import json
 import time
+import json
+import urllib.parse
+import urllib.request
 
-class GetHtml2Json():
-    PageI = 0
-    mName = ""
-    isEnd = False
-    dataJson = []
-    def getHtml(self):
-        print(self.PageI)
-        #print(self.mName)
-        NameEncode = urllib.parse.quote_plus(self.mName.encode('GB2312'))
-        FullUrl = "http://tieba.baidu.com/f/search/ures?kw=&qw=&rn=10&un=" + \
-                 NameEncode + "&only_thread=&sm=0&sd=&ed=&pn=" + str(self.PageI)
-        #print (FullUrl)
-        try:
-            Page = urllib.request.urlopen(FullUrl)
-            mHtml = Page.read().decode('GBK')
-        except:
-            raise Exception("Err")
 
-        reStr = r'<div class=\"s_post\"><span class=\"p_title\"><a.*?>(.*?)</a></span>.*?<div class=\"p_content\">(.*?)</div>.*?<font class=\"p_violet\">(.+?)</font>.*?<font class=\"p_green p_date\">(.+?)</font>.*?</div>'
-        ReTmp = re.compile(reStr)
-        List = re.findall(ReTmp, mHtml)
-        return List
-        
-    def __init__(self, i, Name):
-        self.PageI = i
-        self.mName = Name
+base_path = ""
 
-    def getElement(self):
-        mFileName = self.mName + '.json'
-        mFile = open(mFileName, 'w+')
-        mList = self.getHtml()
-        if len(mList) > 1:
-            for s in mList:
-                data={} 
-                data["Title"] = s[0]
-                data["content"] = s[1]
-                data["Tieba"] = s[2]
-                data["Time"] = s[3]
-                self.dataJson.append(data)
-        else:
-            self.isEnd = True
-            jsonStr = json.dumps(self.dataJson, ensure_ascii = False, indent=2)
-            print(jsonStr)
-            mFile.write(jsonStr)
-            jsonStr = ""
-            del self.dataJson[:]
-        mFile.close()
+
+def rm_it(func):
+    def dec(*args):
+        if os.path.exists(base_path + name + '.json'):
+            os.remove(base_path + name + '.json')
+        result = func(*args)
+        return result
+    return dec
+
+
+@rm_it
+def main(_name):
+    main_loop(_name)(1)
+
+
+def main_loop(_name):
+    def main_loop_curry(num):
+        return main_loop(_name)(num+1) if not_end(process_pages(fetch_html(_name)(num)))(_name) else print('complete!')
+    return main_loop_curry
+
+
+def not_end(_list):
+    def not_end_curry(_name):
+        print(_list)
+
+        def save_json():
+            def write_json(_ori_list=_list):
+                with open(base_path+_name + '.json', 'w+') as _f:
+                    _f.write(json.dumps(_ori_list, ensure_ascii=False, indent=2))
+
+            def exists():
+                os.rename(base_path+_name+'.json', base_path+_name+'.bak.json')
+                with open(base_path+_name + '.bak.json', 'r+') as _r:
+                    write_json(json.loads(_r.read()) + _list)
+                    os.remove(base_path + _name + '.bak.json')
+
+            return exists if os.path.exists(base_path+_name+'.json') else write_json
+        save_json()()
+        print(os.path.exists(base_path + _name + '.json'))
+        time.sleep(5)
+        return True if len(_list) > 1 else False
+    return not_end_curry
+
+
+def process_pages(_list):
+    return list(map(lambda item: {'title': item[0],
+                                  'content': item[1],
+                                  'tieba': item[2],
+                                  'time': item[3],
+                                  }, _list))
+
+
+def fetch_html(_name):
+    def encode_name(_n): return urllib.parse.quote_plus('' if _n is None else str(_n).encode('GB2312'))
+
+    def gen_url(_enn, _p): return "http://tieba.baidu.com/f/search/ures?kw=&qw=&rn=10&un=" + \
+                                  encode_name(_enn) + "&only_thread=&sm=0&sd=&ed=&pn=" + str(_p)
+
+    def get_resp(_url): return urllib.request.urlopen(_url).read().decode('GBK')
+
+    def match_result(_html):
+        _restr = r'<div class=\"s_post\"><span class=\"p_title\"><a.*?>' \
+                 r'(.*?)</a></span>.*?<div class=\"p_content\">([\s\S]*?)' \
+                 r'</div>.*?<font class=\"p_violet\">(.+?)</font>.*?<font ' \
+                 r'class=\"p_green p_date\">(.+?)</font>.*?</div>'
+        return re.findall(re.compile(_restr), _html)
+
+    def fetch_html_curry(p):
+        print(gen_url(_name, p))
+        return match_result(get_resp(gen_url(_name, p)))
+
+    return fetch_html_curry
+
 
 if __name__ == "__main__":
-    i = 1
-    Name = ""
-    while True:
-        A = GetHtml2Json(i, Name)
-        A.getElement()
-        print(A.isEnd)
-        if A.isEnd == True:
-            print("end!")
-            break
-        i += 1
-        time.sleep(5)
+    name = ''
+    main(name)
