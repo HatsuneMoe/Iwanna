@@ -16,12 +16,10 @@ Be vigilant, your entire life is online
 
 ###Require
 Web Crawler:
-[Scrapy][url_Scrapy]
-[url_Scrapy]:https://scrapy.org/
+[Scrapy](https://scrapy.org/)
 
 Text Segmentation:
 
 * CRF++ 0.58
 
-* [jieba branch jieba3k][url_jieba]
-[url_jieba]:https://github.com/fxsjy/jieba/tree/jieba3k "an amazing text segmentation module o(*≧▽≦)ツ "
+* [jieba branch jieba3k](https://github.com/fxsjy/jieba/tree/jieba3k "an amazing text segmentation module o(*≧▽≦)ツ ")
